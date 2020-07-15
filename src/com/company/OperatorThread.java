@@ -13,7 +13,6 @@ import java.net.Socket;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class OperatorThread implements Runnable {
@@ -68,6 +67,9 @@ public class OperatorThread implements Runnable {
                     case "6":
                         addNewService(scanner, printout);
                         break;
+                    case "7":
+                        addNewClient(scanner, printout);
+                        break;
                 }
             }
 
@@ -85,7 +87,7 @@ public class OperatorThread implements Runnable {
         Utils.sendStopSignal(printout);
         String name = scanner.nextLine();
 
-        if (name.toLowerCase().equals("back.")) {
+        if (name.toLowerCase().equals("back")) {
             return;
         }
 
@@ -95,7 +97,7 @@ public class OperatorThread implements Runnable {
             Utils.sendStopSignal(printout);
             String input = scanner.nextLine();
 
-            if (input.toLowerCase().equals("back.")) {
+            if (input.toLowerCase().equals("back")) {
                 return;
             }
 
@@ -113,7 +115,7 @@ public class OperatorThread implements Runnable {
             Utils.sendStopSignal(printout);
             String input = scanner.nextLine();
 
-            if (input.toLowerCase().equals("back.")) {
+            if (input.toLowerCase().equals("back")) {
                 return;
             }
 
@@ -125,13 +127,13 @@ public class OperatorThread implements Runnable {
             }
         }
 
-        int durationDays = 0;
+        int durationDays;
         while (true) {
             printout.println("Please enter the duration of the service in days or Back to return to the menu: ");
             Utils.sendStopSignal(printout);
             String input = scanner.nextLine();
 
-            if (input.toLowerCase().equals("back.")) {
+            if (input.toLowerCase().equals("back")) {
                 return;
             }
 
@@ -145,15 +147,61 @@ public class OperatorThread implements Runnable {
 
         Service service = new Service(name, value, price, durationDays);
 
-        try{
+        try {
             repository.addNewService(service);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             printout.println("Something went wrong, please try again.");
         }
     }
 
+    private void addNewClient(Scanner scanner, PrintStream printout) {
+        String message = "Please enter the %s of the client or Back to return to the menu: ";
+
+        String firstName = getString(scanner, printout, message, "first name");
+        if (firstName == null) return;
+
+        String lastName = getString(scanner, printout, message, "last name");
+        if (lastName == null) return;
+
+        String email = getString(scanner, printout, message, "email");
+        if (email == null) return;
+
+        String egn = getString(scanner, printout, message, "egn");
+        if (egn == null) return;
+
+        String username = getString(scanner, printout, message, "username");
+        if (username == null) return;
+
+        String password = getString(scanner, printout, message, "password");
+        if (password == null) return;
+
+        Client client = new Client(firstName, lastName, email, egn, username, password);
+
+        try {
+            repository.addNewClient(client);
+        } catch (SQLException e) {
+            printout.println("Something went wrong. Try again");
+        }
+    }
+
+
+    private String getString(Scanner scanner, PrintStream printout, String message, String argString) {
+        printout.println(String.format(message, argString));
+        Utils.sendStopSignal(printout);
+
+        String input = scanner.nextLine();
+        return isBack(input);
+    }
+
+    private String isBack(String input) {
+        if (input.toLowerCase().equals("back")) {
+            return null;
+        }
+        return input;
+    }
+
     private void printServiceOfClient(Scanner scanner, PrintStream printout) {
-        printout.println("Please enter egn of client or Back to return to the menu.");
+        printout.println("Please enter egn of client or Back to return to the menu:");
 
         while (true) {
             String input = scanner.nextLine().toLowerCase();
@@ -169,7 +217,7 @@ public class OperatorThread implements Runnable {
     private void printClientsWithService(Scanner scanner, PrintStream printout) {
         int serviceId = -1;
 
-        printout.println("Please enter service number or Back to return to the menu.");
+        printout.println("Please enter service number or Back to return to the menu:");
         Utils.sendStopSignal(printout);
 
         while (true) {
@@ -183,7 +231,7 @@ public class OperatorThread implements Runnable {
                 serviceId = Integer.parseInt(input);
                 break;
             } catch (NumberFormatException e) {
-                printout.println("Please enter valid service number or Back to return to the menu.");
+                printout.println("Please enter valid service number or Back to return to the menu:");
                 Utils.sendStopSignal(printout);
             }
 
@@ -192,12 +240,12 @@ public class OperatorThread implements Runnable {
                 clients = repository.getClientsWithService(serviceId);
 
             } catch (SQLException e) {
-                printout.println("Something went wrong. Please try again.");
+                printout.println("Something went wrong. Please try again:");
             }
 
             if (clients == null || clients.isEmpty()) {
                 printout.println("There is no service with the given service number.");
-                printout.println("Please enter service number or Back to return to the menu.");
+                printout.println("Please enter service number or Back to return to the menu:");
                 Utils.sendStopSignal(printout);
                 continue;
             }
@@ -219,7 +267,7 @@ public class OperatorThread implements Runnable {
                 List<Client> clients = repository.getAllClientsWithUnpaidBills();
 
                 if (clients.isEmpty()) {
-                    printout.println("There are no clients with unpaid bills");
+                    printout.println("There are no clients with unpaid bills.");
                 } else {
                     clients.forEach(client -> printout.println(String
                             .format("%s %s %s",
@@ -267,7 +315,7 @@ public class OperatorThread implements Runnable {
 //        String password = scanner.nextLine();
 //
 //        Client client = new Client(firstName,lastName,email,username,password);
-//    }
+
 
     public boolean isLoginSuccessful(Scanner scanner, PrintStream printout) {
         boolean isLogged = false;
@@ -287,7 +335,7 @@ public class OperatorThread implements Runnable {
                 isLogged = repository.isLogged(username, password);
             } catch (SQLException e) {
                 printout.println("Error occurred. Please try again!");
-                if(i == 2){
+                if (i == 2) {
                     Utils.sendStopSignal(printout);
                 }
             }

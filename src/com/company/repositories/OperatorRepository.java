@@ -145,4 +145,20 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     protected String getTableName() {
         return "operators";
     }
+
+    public void addNewClient(Client client) throws SQLException {
+        String queryString = "insert into clients (first_name, last_name, email, egn, username, password) " +
+                "value (?, ?, ?, ?, ?, ?)";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+        preparedStatement.setString(1, client.getFirstName());
+        preparedStatement.setString(2, client.getLastName());
+        preparedStatement.setString(3, client.getEmail());
+        preparedStatement.setString(4, client.getEgn());
+        preparedStatement.setString(5, client.getUsername());
+        preparedStatement.setString(6, client.getPassword());
+
+        preparedStatement.executeUpdate();
+    }
 }
