@@ -187,15 +187,13 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.executeUpdate();
     }
 
-    public long getPhoneNumberId(String phoneNumber) throws SQLException {
+    public void checkIfPhoneNumberIsTaken(String phoneNumber) throws SQLException {
         String queryString = "select id from phone_numbers " +
                 "where number = ?";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
 
         preparedStatement.setString(1, phoneNumber);
-        ResultSet set = preparedStatement.executeQuery();
-
-        return set.getLong("id");
+        preparedStatement.executeQuery();
     }
 }
