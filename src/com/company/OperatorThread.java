@@ -54,6 +54,7 @@ public class OperatorThread implements Runnable {
                     case "1":
                         break;
                     case "2":
+                        addNewClient(scanner, printout);
                         break;
                     case "3":
                         printServiceOfClient(scanner, printout);
@@ -66,9 +67,6 @@ public class OperatorThread implements Runnable {
                         break;
                     case "6":
                         addNewService(scanner, printout);
-                        break;
-                    case "7":
-                        addNewClient(scanner, printout);
                         break;
                 }
             }
