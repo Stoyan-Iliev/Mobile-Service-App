@@ -50,6 +50,7 @@ public class OperatorThread implements Runnable {
 
                 switch (input) {
                     case "1":
+
                         break;
                     case "2":
                         addNewClient();
@@ -170,10 +171,9 @@ public class OperatorThread implements Runnable {
             if (isBack(phoneNumber) == null) return;
 
             try {
-                repository.getPhoneNumberId(phoneNumber);
+                repository.checkIfPhoneNumberIsTaken(phoneNumber);
                 printout.println("Something went wrong please try again");
                 Utils.sendStopSignal(printout);
-
             } catch (SQLException e) {
                 break;
             }
@@ -200,6 +200,7 @@ public class OperatorThread implements Runnable {
         }
     }
 
+    //ToDo Make it work
     private void printServiceOfClient() {
         printout.println("Please enter egn of client or Back to return to the menu:");
 
