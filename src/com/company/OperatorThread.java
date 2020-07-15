@@ -356,6 +356,7 @@ public class OperatorThread implements Runnable {
                 "4 For searching by service number.",
                 "5 For searching for people who have not paid for the next period.",
                 "6 For adding new service.",
+                "7 For to give client a new phone number.",
                 "Quit For exit from the program."};
 
         printout.println(String.join(System.lineSeparator(), menu));
