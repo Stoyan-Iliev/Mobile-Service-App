@@ -2,6 +2,7 @@ package com.company.repositories;
 
 import com.company.models.Client;
 import com.company.models.Operator;
+import com.company.models.PhoneNumber;
 import com.company.models.Service;
 
 import java.sql.Connection;
@@ -41,6 +42,28 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
             clientList.add(client);
         }
         return clientList;
+    }
+
+    private Service getServiceById(long id) throws SQLException {
+        String queryString = "select * from services " +
+                "where id = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+        preparedStatement.setLong(1, id);
+
+        ResultSet set = preparedStatement.executeQuery();
+        set.next();
+
+        Service service = new Service();
+
+        service.setName(set.getString("name"));
+        service.setValue(set.getDouble("value"));
+        service.setPrice(set.getDouble("price"));
+        service.setDurationDays(set.getInt("duration_days"));
+
+        return service;
+
     }
 
     public boolean isLogged(String username, String password) throws SQLException {
@@ -187,6 +210,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.executeUpdate();
     }
 
+    // Todo Make it boolean and fix it in operatorThread
     public void checkIfPhoneNumberIsTaken(String phoneNumber) throws SQLException {
         String queryString = "select id from phone_numbers " +
                 "where number = ?";
@@ -195,5 +219,36 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
 
         preparedStatement.setString(1, phoneNumber);
         preparedStatement.executeQuery();
+    }
+
+    public List<PhoneNumber> getPhoneNumbersByEgnOfClient(String egn) throws SQLException {
+        String queryString = "select number from phone_numbers " +
+                "where client_id = ?";
+
+        long clientId = getClientId(egn);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+        preparedStatement.setLong(1, clientId);
+
+        ResultSet set = preparedStatement.executeQuery();
+
+        List<PhoneNumber> phoneNumbers = new ArrayList<>();
+
+        while(set.next()){
+            PhoneNumber phoneNumber = new PhoneNumber(set.getString("number"), clientId);
+            phoneNumbers.add(phoneNumber);
+        }
+
+        return phoneNumbers;
+    }
+
+    public void activateService(String chosenPhone, long serviceId) throws SQLException {
+        String queryString = "insert into services_phoneNumbers " +
+                "(phone_number_id, service_id, remaining_value, activation_time) " +
+                "value (?, ?, ?, now())";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+
     }
 }

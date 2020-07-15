@@ -1,16 +1,20 @@
 package com.company;
 
 import com.company.models.Client;
+import com.company.models.PhoneNumber;
 import com.company.models.Service;
 import com.company.repositories.OperatorRepository;
+import jdk.jshell.execution.Util;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class OperatorThread implements Runnable {
     private Socket clientSocket;
@@ -50,7 +54,7 @@ public class OperatorThread implements Runnable {
 
                 switch (input) {
                     case "1":
-
+                        addServiceToAClientPhone();
                         break;
                     case "2":
                         addNewClient();
@@ -79,6 +83,63 @@ public class OperatorThread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //ToDo finish the method
+    private void addServiceToAClientPhone() {
+        String egn = getString("egn of the client");
+        if(egn == null) return;
+
+        List<String> phoneNumbers = getClientsPhoneNumbers(egn);
+        if(phoneNumbers == null){
+            return;
+        }
+
+        String phoneNumbersAsString = String.join(", ", phoneNumbers);
+
+        printout.println(String.format("The client with egn %s has %s numbers", egn, phoneNumbersAsString));
+
+        String chosenPhone = getString("phone number on which to activate the service");
+        if(chosenPhone == null) return;
+
+        long serviceId;
+        while(true){
+            String serviceIdAsString = getString("service number you want to activate");
+            if(serviceIdAsString == null) return;
+
+            try{
+                serviceId = Long.parseLong(serviceIdAsString);
+            } catch (NumberFormatException e){
+                printout.println("Invalid service number.");
+                Utils.sendStopSignal(printout);
+                continue;
+            }
+
+            break;
+        }
+
+        try {
+            repository.activateService(chosenPhone, serviceId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private List<String> getClientsPhoneNumbers(String egn) {
+        List<PhoneNumber> phoneNumbers = null;
+        try {
+            phoneNumbers = repository.getPhoneNumbersByEgnOfClient(egn);
+        } catch (SQLException e) {
+            printout.println("Make sure that the egn you have given is correct and if it is " +
+                    "make sure that the given client has at least one phone number given to him.");
+            Utils.sendStopSignal(printout);
+            return null;
+        }
+
+        return phoneNumbers.stream()
+                .map(PhoneNumber::getNumber)
+                .collect(Collectors.toList());
     }
 
     private void addNewService() {
