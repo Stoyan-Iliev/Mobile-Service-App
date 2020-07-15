@@ -296,25 +296,6 @@ public class OperatorThread implements Runnable {
         Utils.sendStopSignal(printout);
     }
 
-//    private boolean addNewClient(Scanner scanner, PrintStream printout){
-//        printout.println("Enter first name of Client:");
-//        String firstName = scanner.nextLine();
-//
-//        printout.println("Enter last name of Client:");
-//        String lastName = scanner.nextLine();
-//
-//        printout.println("Enter email of Client:");
-//        String email = scanner.nextLine();
-//
-//        printout.println("Enter username of Client:");
-//        String username = scanner.nextLine();
-//
-//        printout.println("Enter password of Client:");
-//        String password = scanner.nextLine();
-//
-//        Client client = new Client(firstName,lastName,email,username,password);
-
-
     public boolean isLoginSuccessful(Scanner scanner, PrintStream printout) {
         boolean isLogged = false;
         for (int i = 0; i < 3; i++) {
