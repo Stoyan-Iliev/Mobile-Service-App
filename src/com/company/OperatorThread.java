@@ -34,7 +34,7 @@ public class OperatorThread implements Runnable {
             PrintStream printout = new PrintStream(clientSocket.getOutputStream());
 
             if (!isLoginSuccessful(scanner, printout)) {
-                printout.println("We am sorry, you are not allowed access!");
+                printout.println("We are sorry, you are not allowed access!");
                 scanner.close();
                 printout.close();
                 return;
