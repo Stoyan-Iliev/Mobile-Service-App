@@ -196,10 +196,6 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.setString(1, phoneNumber);
         ResultSet set = preparedStatement.executeQuery();
 
-        long id = -1;
-        set.next();
-        id = set.getLong("id");
-
-        return id;
+        return set.getLong("id");
     }
 }
