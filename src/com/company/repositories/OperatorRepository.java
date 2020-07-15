@@ -174,4 +174,32 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         set.next();
         return set.getLong("id");
     }
+
+    public void addNewPhoneNumber(String phoneNumber, long clientId) throws SQLException {
+        String queryString = "insert into phone_numbers (number, client_id) " +
+                "value (?, ?)";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+        preparedStatement.setString(1, phoneNumber);
+        preparedStatement.setLong(2, clientId);
+
+        preparedStatement.executeUpdate();
+    }
+
+    public long getPhoneNumberId(String phoneNumber) throws SQLException {
+        String queryString = "select id from phone_numbers " +
+                "where number = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+        preparedStatement.setString(1, phoneNumber);
+        ResultSet set = preparedStatement.executeQuery();
+
+        long id = -1;
+        set.next();
+        id = set.getLong("id");
+
+        return id;
+    }
 }
