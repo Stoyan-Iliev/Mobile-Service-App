@@ -1,8 +1,5 @@
 package com.company;
 
-import com.company.repositories.ClientRepository;
-import com.company.repositories.base.DataRepository;
-
 import java.net.Socket;
 import java.sql.Connection;
 

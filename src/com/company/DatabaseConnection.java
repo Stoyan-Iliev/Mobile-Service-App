@@ -1,8 +1,5 @@
 package com.company;
 
-import com.company.repositories.ClientRepository;
-import com.company.repositories.base.DataRepository;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
