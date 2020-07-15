@@ -88,7 +88,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     }
 
     public void addNewService(Service service) throws SQLException {
-        String queryString = "insert into services (name, value, price, duration_days)"  +
+        String queryString = "insert into services (name, value, price, duration_days)" +
                 "values (?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
@@ -160,5 +160,18 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.setString(6, client.getPassword());
 
         preparedStatement.executeUpdate();
+    }
+
+    public long getClientId(String egn) throws SQLException {
+        String queryString = "select id from clients " +
+                "where egn = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+
+        preparedStatement.setString(1, egn);
+        ResultSet set = preparedStatement.executeQuery();
+
+        set.next();
+        return set.getLong("id");
     }
 }
