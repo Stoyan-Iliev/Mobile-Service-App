@@ -14,26 +14,26 @@ import java.util.Scanner;
 
 public class OperatorThread implements Runnable {
     private Socket clientSocket;
-    private Connection connection;
     private final OperatorRepository repository;
+
+    private Scanner scanner;
+    private PrintStream printout;
+
     private final String message = "Please enter the %s or Back to return to the menu: ";
 
     public OperatorThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        connection = DatabaseConnection.createConnection();
+        Connection connection = DatabaseConnection.createConnection();
         repository = new OperatorRepository(connection);
     }
 
     @Override
     public void run() {
-
-        OperatorRepository repository = new OperatorRepository(connection);
-
         try {
-            Scanner scanner = new Scanner(clientSocket.getInputStream());
-            PrintStream printout = new PrintStream(clientSocket.getOutputStream());
+            scanner = new Scanner(clientSocket.getInputStream());
+            printout = new PrintStream(clientSocket.getOutputStream());
 
-            if (!isLoginSuccessful(scanner, printout)) {
+            if (!isLoginSuccessful()) {
                 printout.println("We are sorry, you are not allowed access!");
                 scanner.close();
                 printout.close();
@@ -41,7 +41,7 @@ public class OperatorThread implements Runnable {
             }
 
             while (true) {
-                printMenu(printout);
+                printMenu();
                 String input = scanner.nextLine().toLowerCase();
 
                 if (input.equals("quit")) {
@@ -52,22 +52,22 @@ public class OperatorThread implements Runnable {
                     case "1":
                         break;
                     case "2":
-                        addNewClient(scanner, printout);
+                        addNewClient();
                         break;
                     case "3":
-                        printServiceOfClient(scanner, printout);
+                        printServiceOfClient();
                         break;
                     case "4":
-                        printClientsWithService(scanner, printout);
+                        printClientsWithService();
                         break;
                     case "5":
-                        printClientsWithUnpaidBill(printout);
+                        printClientsWithUnpaidBill();
                         break;
                     case "6":
-                        addNewService(scanner, printout);
+                        addNewService();
                         break;
                     case "7":
-                        giveClientAPhoneNumber(scanner, printout);
+                        giveClientAPhoneNumber();
                         break;
                 }
             }
@@ -80,25 +80,14 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    private void addNewService(Scanner scanner, PrintStream printout) {
-
-        printout.println("Please enter the name of the service or Back to return to the menu: ");
-        Utils.sendStopSignal(printout);
-        String name = scanner.nextLine();
-
-        if (name.toLowerCase().equals("back")) {
-            return;
-        }
+    private void addNewService() {
+        String name = getString("name of the service");
+        if(name == null) return;
 
         double value;
         while (true) {
-            printout.println("Please enter the volume of the service or Back to return to the menu: ");
-            Utils.sendStopSignal(printout);
-            String input = scanner.nextLine();
-
-            if (input.toLowerCase().equals("back")) {
-                return;
-            }
+            String input = getString("volume of the service");
+            if(input == null) return;
 
             try {
                 value = Double.parseDouble(input);
@@ -110,13 +99,8 @@ public class OperatorThread implements Runnable {
 
         double price;
         while (true) {
-            printout.println("Please enter the price of the service or Back to return to the menu: ");
-            Utils.sendStopSignal(printout);
-            String input = scanner.nextLine();
-
-            if (input.toLowerCase().equals("back")) {
-                return;
-            }
+            String input = getString("price of the service");
+            if(input == null) return;
 
             try {
                 price = Double.parseDouble(input);
@@ -128,13 +112,9 @@ public class OperatorThread implements Runnable {
 
         int durationDays;
         while (true) {
-            printout.println("Please enter the duration of the service in days or Back to return to the menu: ");
-            Utils.sendStopSignal(printout);
-            String input = scanner.nextLine();
+            String input = getString("duration of the service in days");
+            if(input == null) return;
 
-            if (input.toLowerCase().equals("back")) {
-                return;
-            }
 
             try {
                 durationDays = Integer.parseInt(input);
@@ -153,25 +133,25 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    private void addNewClient(Scanner scanner, PrintStream printout) {
+    private void addNewClient() {
         String currentMessage = " of the client";
 
-        String firstName = getString(scanner, printout, message, "first name" + currentMessage);
+        String firstName = getString("first name" + currentMessage);
         if (firstName == null) return;
 
-        String lastName = getString(scanner, printout, message, "last name" + currentMessage);
+        String lastName = getString("last name" + currentMessage);
         if (lastName == null) return;
 
-        String email = getString(scanner, printout, message, "email" + currentMessage);
+        String email = getString("email" + currentMessage);
         if (email == null) return;
 
-        String egn = getString(scanner, printout, message, "egn" + currentMessage);
+        String egn = getString("egn" + currentMessage);
         if (egn == null) return;
 
-        String username = getString(scanner, printout, message, "username" + currentMessage);
+        String username = getString("username" + currentMessage);
         if (username == null) return;
 
-        String password = getString(scanner, printout, message, "password" + currentMessage);
+        String password = getString("password" + currentMessage);
         if (password == null) return;
 
         Client client = new Client(firstName, lastName, email, egn, username, password);
@@ -183,28 +163,24 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    private void giveClientAPhoneNumber(Scanner scanner, PrintStream printout) {
+    private void giveClientAPhoneNumber() {
         String phoneNumber;
         while (true) {
-            phoneNumber = getString(scanner, printout, message, "phone number to be given to the client");
-            if (phoneNumber.toLowerCase().equals("back")) return;
+            phoneNumber = getString("phone number to be given to the client");
+            if (isBack(phoneNumber) == null) return;
 
             try {
-                long id = repository.getPhoneNumberId(phoneNumber);
-
-                //If the given number is not already given to another client
-                if (id <= 0) {
-                    break;
-                }
-            } catch (SQLException e) {
+                repository.getPhoneNumberId(phoneNumber);
                 printout.println("Something went wrong please try again");
                 Utils.sendStopSignal(printout);
-                return;
+
+            } catch (SQLException e) {
+                break;
             }
         }
 
-        String clientEgn = getString(scanner, printout, message, "egn of the client");
-        if (clientEgn.toLowerCase().equals("back")) return;
+        String clientEgn = getString("egn of the client");
+        if (isBack(clientEgn) == null) return;
 
         long clientId;
         try {
@@ -220,10 +196,11 @@ public class OperatorThread implements Runnable {
             repository.addNewPhoneNumber(phoneNumber, clientId);
         } catch (SQLException e) {
             printout.println("Something went wrong try again");
+            Utils.sendStopSignal(printout);
         }
     }
 
-    private void printServiceOfClient(Scanner scanner, PrintStream printout) {
+    private void printServiceOfClient() {
         printout.println("Please enter egn of client or Back to return to the menu:");
 
         while (true) {
@@ -237,7 +214,7 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    private void printClientsWithService(Scanner scanner, PrintStream printout) {
+    private void printClientsWithService() {
         int serviceId = -1;
 
         printout.println("Please enter service number or Back to return to the menu:");
@@ -284,7 +261,7 @@ public class OperatorThread implements Runnable {
 
     }
 
-    private void printClientsWithUnpaidBill(PrintStream printout) {
+    private void printClientsWithUnpaidBill() {
         while (true) {
             try {
                 List<Client> clients = repository.getAllClientsWithUnpaidBills();
@@ -306,7 +283,7 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    public boolean isLoginSuccessful(Scanner scanner, PrintStream printout) {
+    public boolean isLoginSuccessful() {
         boolean isLogged = false;
         for (int i = 0; i < 3; i++) {
             if (isLogged) {
@@ -332,7 +309,7 @@ public class OperatorThread implements Runnable {
         return isLogged;
     }
 
-    private String getString(Scanner scanner, PrintStream printout, String message, String argString) {
+    private String getString(String argString) {
         printout.println(String.format(message, argString));
         Utils.sendStopSignal(printout);
 
@@ -347,7 +324,7 @@ public class OperatorThread implements Runnable {
         return input;
     }
 
-    private void printMenu(PrintStream printout) {
+    private void printMenu() {
         String[] menu = {
                 "Press:",
                 "1 For adding service to existing phone number.",
