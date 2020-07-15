@@ -13,15 +13,16 @@ public class Client {
     public Client() {
     }
 
-    public Client(String firstName, String lastName, String email, String username, String password) {
-        this(0, firstName, lastName, email, username, password);
+    public Client(String firstName, String lastName, String email, String egn, String username, String password) {
+        this(0, firstName, lastName, email, egn, username, password);
     }
 
-    public Client(long id, String firstName, String lastName, String email, String username, String password) {
+    public Client(long id, String firstName, String lastName, String email, String egn, String username, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.egn = egn;
         this.username = username;
         this.password = password;
     }
