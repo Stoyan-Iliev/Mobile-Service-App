@@ -67,7 +67,6 @@ public class ClientRepository {
         String queryString = "select * from services_phone_numbers as sp " +
                 "join services as s on s.id = sp.service_id " +
                 "where is_activated = true and " +
-                "is_paid = false and " +
                 "phone_number_id = ?";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
