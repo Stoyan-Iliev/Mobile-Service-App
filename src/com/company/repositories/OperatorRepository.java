@@ -224,17 +224,6 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.executeUpdate();
     }
 
-    // Todo Make it boolean and fix it in operatorThread
-    public void checkIfPhoneNumberIsTaken(String phoneNumber) throws SQLException {
-        String queryString = "select id from phone_numbers " +
-                "where number = ?";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
-
-        preparedStatement.setString(1, phoneNumber);
-        preparedStatement.executeQuery();
-    }
-
     public List<PhoneNumber> getPhoneNumbersByEgnOfClient(String egn) throws SQLException {
         String queryString = "select number from phone_numbers " +
                 "where client_id = ?";
@@ -257,7 +246,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     }
 
     public void activateService(String chosenPhone, long serviceId) throws SQLException {
-        String queryString = "insert into services_phoneNumbers " +
+        String queryString = "insert into services_phonenumbers " +
                 "(phone_number_id, service_id, remaining_value, activation_time) " +
                 "value (?, ?, ?, now())";
 
@@ -269,5 +258,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.setLong(1, phoneNumberId);
         preparedStatement.setLong(2, serviceId);
         preparedStatement.setDouble(3, service.getValue());
+
+        preparedStatement.executeUpdate();
     }
 }

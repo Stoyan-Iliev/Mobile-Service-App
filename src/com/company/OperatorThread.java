@@ -22,6 +22,7 @@ public class OperatorThread implements Runnable {
     private PrintStream printout;
 
     private final String message = "Please enter the %s or Back to return to the menu: ";
+    private String messageSuccess = "Operation successful.";
 
     public OperatorThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -47,6 +48,8 @@ public class OperatorThread implements Runnable {
                 String input = scanner.nextLine().toLowerCase();
 
                 if (input.equals("quit")) {
+                    printout.println("Goodbye");
+                    Utils.sendStopSignal(printout);
                     break;
                 }
 
@@ -83,7 +86,6 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    //ToDo finish the method
     private void addServiceToAClientPhone() {
         String egn = getString("egn of the client");
         if(egn == null) return;
@@ -118,11 +120,11 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.activateService(chosenPhone, serviceId);
+            printout.println(messageSuccess);
         } catch (SQLException e) {
             printout.println("Something went wrong. Try again");
             Utils.sendStopSignal(printout);
         }
-
     }
 
     private List<String> getClientsPhoneNumbers(String egn) {
@@ -189,6 +191,7 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.addNewService(service);
+            printout.println(messageSuccess);
         } catch (SQLException e) {
             printout.println("Something went wrong, please try again.");
         }
@@ -219,25 +222,13 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.addNewClient(client);
+            printout.println(messageSuccess);
         } catch (SQLException e) {
             printout.println("Something went wrong. Try again");
         }
     }
 
     private void giveClientAPhoneNumber() {
-        String phoneNumber;
-        while (true) {
-            phoneNumber = getString("phone number to be given to the client");
-            if (isBack(phoneNumber) == null) return;
-
-            try {
-                repository.checkIfPhoneNumberIsTaken(phoneNumber);
-                printout.println("Something went wrong please try again");
-            } catch (SQLException e) {
-                break;
-            }
-        }
-
         String clientEgn = getString("egn of the client");
         if (isBack(clientEgn) == null) return;
 
@@ -246,16 +237,24 @@ public class OperatorThread implements Runnable {
             clientId = repository.getClientId(clientEgn);
         } catch (SQLException e) {
             printout.println("There is no client with the given egn. " +
-                    "Make sure you have entered the client information before attempting to give him phone number.");
+                    "Make sure you have added the client before attempting to give him phone number.");
             Utils.sendStopSignal(printout);
             return;
         }
 
-        try {
-            repository.addNewPhoneNumber(phoneNumber, clientId);
-        } catch (SQLException e) {
-            printout.println("Something went wrong try again");
-            Utils.sendStopSignal(printout);
+        String phoneNumber;
+        while (true) {
+            phoneNumber = getString("phone number to be given to the client");
+            if (isBack(phoneNumber) == null) return;
+
+            try {
+                repository.addNewPhoneNumber(phoneNumber, clientId);
+                printout.println(messageSuccess);
+                Utils.sendStopSignal(printout);
+                return;
+            } catch (SQLException e) {
+                printout.println("Make sure that the phone number you have given is not given to another client.");
+            }
         }
     }
 
@@ -343,7 +342,7 @@ public class OperatorThread implements Runnable {
         }
     }
 
-    public boolean isLoginSuccessful() {
+    private boolean isLoginSuccessful() {
         boolean isLogged = false;
         for (int i = 0; i < 3; i++) {
             if (isLogged) {
