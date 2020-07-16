@@ -64,7 +64,7 @@ public class ClientRepository {
 
     //TODO To get name of service
     public List<PhoneNumberService> getServicePhoneNumberByPhoneId(long id) throws SQLException {
-        String queryString = "select * from service_phonenumbers as sp " +
+        String queryString = "select * from services_phone_numbers as sp " +
                 "join services as s on s.id = sp.service_id " +
                 "where is_activated = true and " +
                 "is_paid = false and " +

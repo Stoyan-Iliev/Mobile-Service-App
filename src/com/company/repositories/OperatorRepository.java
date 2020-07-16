@@ -19,7 +19,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     public List<Client> getAllClientsWithUnpaidBills() throws SQLException {
         String queryString = "select * from clients\n" +
                 "where id in (select client_id from phone_numbers\n" +
-                "    where id in (select phone_number_id from services_phoneNumbers\n" +
+                "    where id in (select phone_number_id from services_phone_numbers\n" +
                 "        where is_paid = false))";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
@@ -79,7 +79,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     public Map<Client, List<String>> getClientsWithService(int id) throws SQLException {
         String queryString = "select * from clients as c " +
                 "join phone_numbers as pn.client_id = c.id " +
-                "where pn.id in (select phone_number_id from services_phoneNumbers " +
+                "where pn.id in (select phone_number_id from services_phone_numbers " +
                 "where service_id = ?";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
@@ -126,7 +126,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
 //    public void getServiceOfClient(String egn) throws SQLException {
 //        String queryString = "select * from clients as c " +
 //                "join mobile_phones as mp on mp.client_id = c.id " +
-//                "join services as s on s.id in (select service_id from services_phoneNumbers " +
+//                "join services as s on s.id in (select service_id from services_phone_numbers " +
 //                "where phone_number_id = mp.id)";
 //
 //        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
@@ -246,9 +246,9 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
     }
 
     public void activateService(String chosenPhone, long serviceId) throws SQLException {
-        String queryString = "insert into services_phonenumbers " +
-                "(phone_number_id, service_id, remaining_value, activation_time) " +
-                "value (?, ?, ?, now())";
+        String queryString = "insert into services_phone_numbers " +
+                "(phone_number_id, service_id, remaining_value, activation_date) " +
+                "values (?, ?, ?, curdate())";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
 
