@@ -1,9 +1,7 @@
 package com.company.repositories;
 
-import com.company.models.Client;
 import com.company.models.PhoneNumber;
 import com.company.models.PhoneNumberService;
-import com.company.models.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -62,7 +60,6 @@ public class ClientRepository {
         return phoneNumbers;
     }
 
-    //TODO To get name of service
     public List<PhoneNumberService> getServicePhoneNumberByPhoneId(long id) throws SQLException {
         String queryString = "select * from services_phone_numbers as sp " +
                 "join services as s on s.id = sp.service_id " +
