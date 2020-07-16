@@ -25,7 +25,7 @@ public class ThreadPooledServer implements Runnable{
         }
         openServerSocket();
         while(! isStopped()){
-            Socket clientSocket = null;
+            Socket clientSocket;
             try {
                 clientSocket = this.serverSocket.accept();
             } catch (IOException e) {
@@ -37,8 +37,7 @@ public class ThreadPooledServer implements Runnable{
                         "Error accepting client connection", e);
             }
             this.threadPool.execute(
-                    new WorkerRunnable(clientSocket,
-                            "Thread Pooled Server"));
+                    new WorkerRunnable(clientSocket));
         }
         this.threadPool.shutdown();
         System.out.println("Server Stopped.") ;
@@ -61,7 +60,7 @@ public class ThreadPooledServer implements Runnable{
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot open port 8080", e);
+            throw new RuntimeException("Cannot open port " + this.serverPort, e);
         }
     }
 }
