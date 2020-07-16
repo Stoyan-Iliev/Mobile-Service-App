@@ -4,13 +4,11 @@ import com.company.models.Client;
 import com.company.models.PhoneNumber;
 import com.company.models.Service;
 import com.company.repositories.OperatorRepository;
-import jdk.jshell.execution.Util;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -121,13 +119,14 @@ public class OperatorThread implements Runnable {
         try {
             repository.activateService(chosenPhone, serviceId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            printout.println("Something went wrong. Try again");
+            Utils.sendStopSignal(printout);
         }
 
     }
 
     private List<String> getClientsPhoneNumbers(String egn) {
-        List<PhoneNumber> phoneNumbers = null;
+        List<PhoneNumber> phoneNumbers;
         try {
             phoneNumbers = repository.getPhoneNumbersByEgnOfClient(egn);
         } catch (SQLException e) {
@@ -234,7 +233,6 @@ public class OperatorThread implements Runnable {
             try {
                 repository.checkIfPhoneNumberIsTaken(phoneNumber);
                 printout.println("Something went wrong please try again");
-                Utils.sendStopSignal(printout);
             } catch (SQLException e) {
                 break;
             }
