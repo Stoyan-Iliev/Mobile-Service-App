@@ -75,6 +75,9 @@ public class OperatorThread implements Runnable {
                     case "7":
                         giveClientAPhoneNumber();
                         break;
+                    default:
+                        printout.println("Enter valid command.");
+                        break;
                 }
             }
 
@@ -390,7 +393,7 @@ public class OperatorThread implements Runnable {
 
     private void printMenu() {
         String[] menu = {
-                "Press:",
+                "Enter:",
                 "1 For adding service to existing phone number.",
                 "2 For adding a new client.",
                 "3 For searching by client egn.",
