@@ -8,11 +8,9 @@ import java.util.Scanner;
 public class WorkerRunnable implements Runnable{
 
     protected Socket clientSocket;
-    protected String serverText;
 
-    public WorkerRunnable(Socket clientSocket, String serverText) {
+    public WorkerRunnable(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.serverText   = serverText;
     }
 
     public void run() {
