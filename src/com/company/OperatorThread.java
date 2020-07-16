@@ -49,7 +49,8 @@ public class OperatorThread implements Runnable {
 
                 if (input.equals("quit")) {
                     printout.println("Goodbye");
-                    Utils.sendStopSignal(printout);
+                    scanner.close();
+                    printout.close();
                     break;
                 }
 
@@ -126,7 +127,6 @@ public class OperatorThread implements Runnable {
             printout.println(messageSuccess);
         } catch (SQLException e) {
             printout.println("Something went wrong. Try again");
-            Utils.sendStopSignal(printout);
         }
     }
 
@@ -137,7 +137,6 @@ public class OperatorThread implements Runnable {
         } catch (SQLException e) {
             printout.println("Make sure that the egn you have given is correct and if it is " +
                     "make sure that the given client has at least one phone number given to him.");
-            Utils.sendStopSignal(printout);
             return null;
         }
 
@@ -241,7 +240,6 @@ public class OperatorThread implements Runnable {
         } catch (SQLException e) {
             printout.println("There is no client with the given egn. " +
                     "Make sure you have added the client before attempting to give him phone number.");
-            Utils.sendStopSignal(printout);
             return;
         }
 
@@ -253,7 +251,6 @@ public class OperatorThread implements Runnable {
             try {
                 repository.addNewPhoneNumber(phoneNumber, clientId);
                 printout.println(messageSuccess);
-                Utils.sendStopSignal(printout);
                 return;
             } catch (SQLException e) {
                 printout.println("Make sure that the phone number you have given is not given to another client.");
