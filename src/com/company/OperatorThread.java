@@ -352,6 +352,11 @@ public class OperatorThread implements Runnable {
             printout.println("Enter username or enter quit to exit:");
             Utils.sendStopSignal(printout);
             String username = scanner.nextLine();
+
+            if(username.toLowerCase().equals("quit")){
+                return false;
+            }
+
             printout.println("Enter password:");
             Utils.sendStopSignal(printout);
             String password = scanner.nextLine();
