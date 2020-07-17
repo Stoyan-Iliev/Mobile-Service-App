@@ -123,46 +123,6 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
 
         preparedStatement.executeUpdate();
     }
-//    public void getServiceOfClient(String egn) throws SQLException {
-//        String queryString = "select * from clients as c " +
-//                "join mobile_phones as mp on mp.client_id = c.id " +
-//                "join services as s on s.id in (select service_id from services_phone_numbers " +
-//                "where phone_number_id = mp.id)";
-//
-//        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
-//
-//        ResultSet set = preparedStatement.executeQuery();
-//
-//        while(set.next()){
-//            String fullName = set.getString("first_name") + " " + set.getString("last_name");
-//            String phoneNumber = set.getString("number");
-//            String service = set.getString("name") + " " + set.getDouble("value");
-//
-//            Map<String, Map<String, List<String>>> clientsServices = new HashMap<>();
-//
-//            if(!clientsServices.containsKey(fullName)){
-//                clientsServices.put(fullName, new HashMap<>());
-//            } else if(!clientsServices.get(fullName).containsKey(phoneNumber)){
-//                Map<String, List<String>> temp = clientsServices.get(fullName);
-//                temp.put(phoneNumber, new ArrayList<>();
-//                clientsServices.put(fullName, temp);
-//            }
-//
-//            List<String> temp = clientsServices.get(fullName).get(phoneNumber);
-//            temp.add(service);
-//
-//            clientsServices.get(fullName).put(phoneNumber,temp);
-//
-//            clientsServices.put(fullName,clientsServices
-//                    .put(phoneNumber, clientsServices.get(phoneNumber)));
-//        }
-//    }
-
-    //    public boolean insertClient(Client client){
-//        String queryString = "insert into " + getTableName() +
-//                "(" ) values" +
-//                client.getFirstName()
-//    }
 
     @Override
     protected String getTableName() {
