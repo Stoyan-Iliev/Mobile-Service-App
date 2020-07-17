@@ -21,61 +21,56 @@ public class ClientThread implements Runnable {
 
     private ClientRepository repository;
 
-    public ClientThread(Socket clientSocket) {
+    public ClientThread(Socket clientSocket, Scanner scanner, PrintStream printout) {
         this.clientSocket = clientSocket;
+        this.scanner = scanner;
+        this.printout = printout;
+
         Connection connection = DatabaseConnection.createConnection();
         repository = new ClientRepository(connection);
     }
 
     @Override
     public void run() {
-        try {
-            scanner = new Scanner(clientSocket.getInputStream());
-            printout = new PrintStream(clientSocket.getOutputStream());
+        clientId = getLoginId();
+        if (clientId == -1) {
+            printout.println("Goodbye");
+            scanner.close();
+            printout.close();
+            return;
+        } else if (clientId == 0) {
+            printout.println("We are sorry, you are not allowed access!");
+            scanner.close();
+            printout.close();
+            return;
+        }
 
-            clientId = getLoginId();
-            if (clientId == -1) {
+        while (true) {
+            printMenu();
+            String input = scanner.nextLine().toLowerCase();
+
+            if (input.equals("quit")) {
                 printout.println("Goodbye");
                 scanner.close();
                 printout.close();
-                return;
-            } else if (clientId == 0) {
-                printout.println("We are sorry, you are not allowed access!");
-                scanner.close();
-                printout.close();
-                return;
+                break;
             }
 
-            while (true) {
-                printMenu();
-                String input = scanner.nextLine().toLowerCase();
-
-                if (input.equals("quit")) {
-                    printout.println("Goodbye");
-                    scanner.close();
-                    printout.close();
+            switch (input) {
+                case "1":
+                    printClientServicesInfo();
                     break;
-                }
+                case "2":
+                    printPaymentDeadlineForEveryService();
+                    break;
+                default:
+                    printout.println("Enter valid command.");
 
-                switch (input) {
-                    case "1":
-                        printClientServicesInfo();
-                        break;
-                    case "2":
-                        printPaymentDeadlineForEveryService();
-                        break;
-                    default:
-                        printout.println("Enter valid command.");
-
-                }
             }
-
-            scanner.close();
-            printout.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
+        scanner.close();
+        printout.close();
     }
 
     private void printPaymentDeadlineForEveryService() {

@@ -24,78 +24,74 @@ public class OperatorThread implements Runnable {
     private final String message = "Please enter the %s or Back to return to the menu: ";
     private String messageSuccess = "Operation successful.";
 
-    public OperatorThread(Socket clientSocket) {
+    public OperatorThread(Socket clientSocket, Scanner scanner, PrintStream printout) {
         this.clientSocket = clientSocket;
+        this.scanner = scanner;
+        this.printout = printout;
+
         Connection connection = DatabaseConnection.createConnection();
         repository = new OperatorRepository(connection);
     }
 
     @Override
     public void run() {
-        try {
-            scanner = new Scanner(clientSocket.getInputStream());
-            printout = new PrintStream(clientSocket.getOutputStream());
 
-            if (!isLoginSuccessful()) {
-                printout.println("We are sorry, you are not allowed access!");
-                scanner.close();
-                printout.close();
-                return;
-            }
-
-            while (true) {
-                printMenu();
-                String input = scanner.nextLine().toLowerCase();
-
-                if (input.equals("quit")) {
-                    printout.println("Goodbye");
-                    scanner.close();
-                    printout.close();
-                    break;
-                }
-
-                switch (input) {
-                    case "1":
-                        addServiceToAClientPhone();
-                        break;
-                    case "2":
-                        addNewClient();
-                        break;
-                    case "3":
-                        printServiceOfClient();
-                        break;
-                    case "4":
-                        printClientsWithService();
-                        break;
-                    case "5":
-                        printClientsWithUnpaidBill();
-                        break;
-                    case "6":
-                        addNewService();
-                        break;
-                    case "7":
-                        giveClientAPhoneNumber();
-                        break;
-                    default:
-                        printout.println("Enter valid command.");
-                        break;
-                }
-            }
-
+        if (!isLoginSuccessful()) {
+            printout.println("We are sorry, you are not allowed access!");
             scanner.close();
             printout.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
+
+        while (true) {
+            printMenu();
+            String input = scanner.nextLine().toLowerCase();
+
+            if (input.equals("quit")) {
+                printout.println("Goodbye");
+                scanner.close();
+                printout.close();
+                break;
+            }
+
+            switch (input) {
+                case "1":
+                    addServiceToAClientPhone();
+                    break;
+                case "2":
+                    addNewClient();
+                    break;
+                case "3":
+                    printServiceOfClient();
+                    break;
+                case "4":
+                    printClientsWithService();
+                    break;
+                case "5":
+                    printClientsWithUnpaidBill();
+                    break;
+                case "6":
+                    addNewService();
+                    break;
+                case "7":
+                    giveClientAPhoneNumber();
+                    break;
+                default:
+                    printout.println("Enter valid command.");
+                    break;
+            }
+        }
+
+        scanner.close();
+        printout.close();
     }
 
     private void addServiceToAClientPhone() {
         String egn = getString("egn of the client");
-        if(egn == null) return;
+        if (egn == null) return;
 
         List<String> phoneNumbers = getClientsPhoneNumbers(egn);
-        if(phoneNumbers == null){
+        if (phoneNumbers == null) {
             return;
         }
 
@@ -104,16 +100,16 @@ public class OperatorThread implements Runnable {
         printout.println(String.format("The client with egn %s has %s numbers", egn, phoneNumbersAsString));
 
         String chosenPhone = getString("phone number on which to activate the service");
-        if(chosenPhone == null) return;
+        if (chosenPhone == null) return;
 
         long serviceId;
-        while(true){
+        while (true) {
             String serviceIdAsString = getString("service number you want to activate");
-            if(serviceIdAsString == null) return;
+            if (serviceIdAsString == null) return;
 
-            try{
+            try {
                 serviceId = Long.parseLong(serviceIdAsString);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 printout.println("Invalid service number.");
                 Utils.sendStopSignal(printout);
                 continue;
@@ -147,12 +143,12 @@ public class OperatorThread implements Runnable {
 
     private void addNewService() {
         String name = getString("name of the service");
-        if(name == null) return;
+        if (name == null) return;
 
         double value;
         while (true) {
             String input = getString("volume of the service");
-            if(input == null) return;
+            if (input == null) return;
 
             try {
                 value = Double.parseDouble(input);
@@ -165,7 +161,7 @@ public class OperatorThread implements Runnable {
         double price;
         while (true) {
             String input = getString("price of the service");
-            if(input == null) return;
+            if (input == null) return;
 
             try {
                 price = Double.parseDouble(input);
@@ -178,7 +174,7 @@ public class OperatorThread implements Runnable {
         int durationDays;
         while (true) {
             String input = getString("duration of the service in days");
-            if(input == null) return;
+            if (input == null) return;
 
 
             try {
@@ -353,7 +349,7 @@ public class OperatorThread implements Runnable {
             Utils.sendStopSignal(printout);
             String username = scanner.nextLine();
 
-            if(username.toLowerCase().equals("quit")){
+            if (username.toLowerCase().equals("quit")) {
                 return false;
             }
 

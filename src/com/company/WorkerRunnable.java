@@ -29,12 +29,16 @@ public class WorkerRunnable implements Runnable{
                 switch (choice.toLowerCase()){
                     case "quit":
                         printout.println("Goodbye!");
+                        scanner.close();
+                        printout.close();
                         break;
                     case "1":
-                        new OperatorThread(clientSocket).run();
+                        OperatorThread operatorThread = new OperatorThread(clientSocket, scanner, printout);
+                        new Thread(operatorThread, "Operator thread").start();
                         break;
                     case "2":
-                        new ClientThread(clientSocket).run();
+                        ClientThread clientThread = new ClientThread(clientSocket, scanner, printout);
+                        new Thread(clientThread, "Client Thread").start();
                         break;
                     default:
                         isChoiceCorrect = false;
@@ -42,10 +46,6 @@ public class WorkerRunnable implements Runnable{
                         break;
                 }
             }
-
-            printout.close();
-            scanner.close();
-
         } catch (IOException e) {
             //report exception somewhere.
             e.printStackTrace();
