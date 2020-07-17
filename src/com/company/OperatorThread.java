@@ -274,24 +274,24 @@ public class OperatorThread implements Runnable {
     }
 
     private void printClientsWithService() {
-        int serviceId = -1;
+        int serviceId;
 
         printout.println("Please enter service number or Back to return to the menu:");
         Utils.sendStopSignal(printout);
 
         while (true) {
-            String input = scanner.nextLine().toLowerCase();
+            String input = scanner.nextLine();
 
-            if (input.equals("back")) {
+            if (isBack(input) == null) {
                 return;
             }
 
             try {
                 serviceId = Integer.parseInt(input);
-                break;
             } catch (NumberFormatException e) {
                 printout.println("Please enter valid service number or Back to return to the menu:");
                 Utils.sendStopSignal(printout);
+                continue;
             }
 
             Map<Client, List<String>> clients = null;
@@ -311,13 +311,13 @@ public class OperatorThread implements Runnable {
 
             for (Map.Entry<Client, List<String>> entry : clients.entrySet()) {
                 String clientInfo = entry.getKey().getFirstName() + " " +
-                        entry.getKey().getLastName() + " " +
+                        entry.getKey().getLastName() + " - " +
                         entry.getKey().getEmail();
 
                 printout.println(clientInfo + ": " + String.join(", ", entry.getValue()));
             }
+            break;
         }
-
     }
 
     private void printClientsWithUnpaidBill() {

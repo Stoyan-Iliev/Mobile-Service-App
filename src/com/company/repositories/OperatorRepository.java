@@ -11,9 +11,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class OperatorRepository extends JdbcDataRepository<Operator> {
+public class OperatorRepository {
+    private final Connection connection;
+
     public OperatorRepository(Connection connection) {
-        super(connection);
+        this.connection = connection;
     }
 
     public List<Client> getAllClientsWithUnpaidBills() throws SQLException {
@@ -68,7 +70,7 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
 
     public boolean isLogged(String username, String password) throws SQLException {
         String queryString =
-                "select * from " + getTableName() +
+                "select * from operators" +
                         " where username = '" + username +
                         "' and password = '" + password + "'";
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
@@ -78,9 +80,9 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
 
     public Map<Client, List<String>> getClientsWithService(int id) throws SQLException {
         String queryString = "select * from clients as c " +
-                "join phone_numbers as pn.client_id = c.id " +
+                "join phone_numbers as pn on pn.client_id = c.id " +
                 "where pn.id in (select phone_number_id from services_phone_numbers " +
-                "where service_id = ?";
+                "where service_id = ?)";
 
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
         preparedStatement.setInt(1, id);
@@ -122,11 +124,6 @@ public class OperatorRepository extends JdbcDataRepository<Operator> {
         preparedStatement.setInt(4, service.getDurationDays());
 
         preparedStatement.executeUpdate();
-    }
-
-    @Override
-    protected String getTableName() {
-        return "operators";
     }
 
     public void addNewClient(Client client) throws SQLException {

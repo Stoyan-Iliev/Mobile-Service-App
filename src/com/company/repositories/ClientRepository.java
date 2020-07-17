@@ -19,17 +19,9 @@ public class ClientRepository {
         this.connection = connection;
     }
 
-    protected String getTableName() {
-        return "clients";
-    }
-
-    protected List<String> getColumnNames() {
-        return List.of("first_name", "last_name", "email", "username", "password");
-    }
-
     public long isLogged(String username, String password) throws SQLException {
         String queryString =
-                "select * from " + getTableName() +
+                "select * from clients"  +
                         " where username = '" + username +
                         "' and password = '" + password + "'";
         PreparedStatement preparedStatement = connection.prepareStatement(queryString);
