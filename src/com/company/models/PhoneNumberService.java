@@ -11,6 +11,8 @@ public class PhoneNumberService {
     private LocalDate activationDate;
     private boolean isPaid;
     private boolean isActivated;
+    private double price;
+    private double startingValue;
 
     public PhoneNumberService() {
     }
@@ -21,7 +23,16 @@ public class PhoneNumberService {
         this.deactivationDate = deactivationDate;
     }
 
-    public PhoneNumberService(long phoneNumberId, long serviceId, double remainingValue, LocalDate deactivationDate, LocalDate activationDate, boolean isPaid, boolean isActivated) {
+    public PhoneNumberService(String name, LocalDate deactivationDate, double price, double startingValue) {
+        this.name = name;
+        this.deactivationDate = deactivationDate;
+        this.price = price;
+        this.startingValue = startingValue;
+    }
+
+    public PhoneNumberService(long phoneNumberId, long serviceId, double remainingValue,
+                              LocalDate deactivationDate, LocalDate activationDate,
+                              boolean isPaid, boolean isActivated) {
         this.phoneNumberId = phoneNumberId;
         this.serviceId = serviceId;
         this.remainingValue = remainingValue;
@@ -85,5 +96,21 @@ public class PhoneNumberService {
 
     public void setActivated(boolean activated) {
         isActivated = activated;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getStartingValue() {
+        return startingValue;
+    }
+
+    public void setStartingValue(double startingValue) {
+        this.startingValue = startingValue;
     }
 }
