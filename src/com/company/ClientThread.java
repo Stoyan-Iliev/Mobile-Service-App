@@ -14,7 +14,6 @@ import java.util.Scanner;
 
 public class ClientThread implements Runnable {
     private Socket clientSocket;
-    private Connection connection;
     private long clientId;
 
     private Scanner scanner;
@@ -24,7 +23,7 @@ public class ClientThread implements Runnable {
 
     public ClientThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        connection = DatabaseConnection.createConnection();
+        Connection connection = DatabaseConnection.createConnection();
         repository = new ClientRepository(connection);
     }
 
@@ -63,7 +62,7 @@ public class ClientThread implements Runnable {
                         printClientServicesInfo();
                         break;
                     case "2":
-//                        addNewClient();
+                        printPaymentDeadlineForEveryService();
                         break;
                     default:
                         printout.println("Enter valid command.");
@@ -79,6 +78,35 @@ public class ClientThread implements Runnable {
 
     }
 
+    private void printPaymentDeadlineForEveryService() {
+        try {
+            List<PhoneNumber> phoneNumbers = repository.getClientPhoneNumber(clientId);
+
+            StringBuilder stringBuilder = new StringBuilder();
+            for (PhoneNumber phoneNumber : phoneNumbers) {
+                List<PhoneNumberService> services = repository.
+                        getDeactivationDatesOnUnpaidServicesByPhoneId(phoneNumber.getId());
+
+                for (PhoneNumberService service : services) {
+                    stringBuilder
+                            .append("You need to pay ")
+                            .append(service.getPrice())
+                            .append("lv for ")
+                            .append(service.getStartingValue())
+                            .append(" ")
+                            .append(service.getName())
+                            .append(" before ")
+                            .append(service.getDeactivationDate())
+                            .append(System.lineSeparator());
+                }
+            }
+
+            printout.println(stringBuilder);
+        } catch (SQLException e) {
+            printout.println("Something went wrong try again");
+        }
+    }
+
     private void printClientServicesInfo() {
         try {
             List<PhoneNumber> phoneNumbers = repository.getClientPhoneNumber(clientId);
@@ -86,7 +114,7 @@ public class ClientThread implements Runnable {
             StringBuilder stringBuilder = new StringBuilder();
             for (PhoneNumber phoneNumber : phoneNumbers) {
                 List<PhoneNumberService> services = repository.
-                        getServicePhoneNumberByPhoneId(phoneNumber.getId());
+                        getPhoneNumberActiveServicesByPhoneId(phoneNumber.getId());
 
                 for (PhoneNumberService service : services) {
                     stringBuilder
