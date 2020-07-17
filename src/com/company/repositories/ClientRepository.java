@@ -60,7 +60,7 @@ public class ClientRepository {
         return phoneNumbers;
     }
 
-    public List<PhoneNumberService> getServicePhoneNumberByPhoneId(long id) throws SQLException {
+    public List<PhoneNumberService> getPhoneNumberActiveServicesByPhoneId(long id) throws SQLException {
         String queryString = "select * from services_phone_numbers as sp " +
                 "join services as s on s.id = sp.service_id " +
                 "where is_activated = true and " +
@@ -74,8 +74,8 @@ public class ClientRepository {
         List<PhoneNumberService> activatedServices = new ArrayList<>();
 
         while (set.next()) {
-             String name = set.getString("name");
-             double remainingValue = set.getDouble("remaining_value");
+            String name = set.getString("name");
+            double remainingValue = set.getDouble("remaining_value");
             LocalDate deactivationDate = LocalDate.parse(set.getDate("deactivation_date").toString());
 
             PhoneNumberService service = new PhoneNumberService(name, remainingValue, deactivationDate);
@@ -83,5 +83,30 @@ public class ClientRepository {
             activatedServices.add(service);
         }
         return activatedServices;
+    }
+
+    public List<PhoneNumberService> getDeactivationDatesOnUnpaidServicesByPhoneId(long id) throws SQLException {
+        String queryString = "select * from services_phone_numbers as sp " +
+                "join services as s on s.id = sp.service_id " +
+                "where sp.is_paid = false " +
+                "and sp.is_activated = true " +
+                "and sp.phone_number_id = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryString);
+        preparedStatement.setLong(1, id);
+        ResultSet set = preparedStatement.executeQuery();
+
+        List<PhoneNumberService> services = new ArrayList<>();
+        while (set.next()) {
+            String name = set.getString("name");
+            double startingValue = set.getDouble("value");
+            double price = set.getDouble("price");
+            LocalDate deactivationDate = LocalDate.parse(set.getString("deactivation_date"));
+
+            PhoneNumberService phoneNumberService = new PhoneNumberService(name, deactivationDate, price, startingValue);
+            services.add(phoneNumberService);
+        }
+
+        return services;
     }
 }
