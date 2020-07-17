@@ -1,4 +1,6 @@
-package com.company;
+package com.company.server;
+
+import com.company.WorkerRunnable;
 
 import java.net.ServerSocket;
 import java.net.Socket;
