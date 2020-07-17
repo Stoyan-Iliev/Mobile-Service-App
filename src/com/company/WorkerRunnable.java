@@ -29,9 +29,7 @@ public class WorkerRunnable implements Runnable{
                 switch (choice.toLowerCase()){
                     case "quit":
                         printout.println("Goodbye!");
-                        printout.close();
-                        scanner.close();
-                        return;
+                        break;
                     case "1":
                         new OperatorThread(clientSocket).run();
                         break;
