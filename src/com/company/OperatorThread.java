@@ -120,9 +120,9 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.activateService(chosenPhone, serviceId);
-            printout.println(messageSuccess);
+            printout.println("Service Activated successfully.");
         } catch (SQLException e) {
-            printout.println("Something went wrong. Try again");
+            printout.println("The service is already active");
         }
     }
 
@@ -189,9 +189,9 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.addNewService(service);
-            printout.println(messageSuccess);
+            printout.println("Service added successfully");
         } catch (SQLException e) {
-            printout.println("Something went wrong, please try again.");
+            printout.println("The service already exists.");
         }
     }
 
@@ -220,9 +220,9 @@ public class OperatorThread implements Runnable {
 
         try {
             repository.addNewClient(client);
-            printout.println(messageSuccess);
+            printout.println("Client added successfully");
         } catch (SQLException e) {
-            printout.println("Something went wrong. Try again");
+            printout.println("Client with this egn, email or username is already in the system.");
         }
     }
 
@@ -246,7 +246,7 @@ public class OperatorThread implements Runnable {
 
             try {
                 repository.addNewPhoneNumber(phoneNumber, clientId);
-                printout.println(messageSuccess);
+                printout.println("Phone number assigned successfully");
                 return;
             } catch (SQLException e) {
                 printout.println("Make sure that the phone number you have given is not given to another client.");
