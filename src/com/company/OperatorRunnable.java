@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class OperatorThread implements Runnable {
+public class OperatorRunnable implements Runnable {
     private Socket clientSocket;
     private final OperatorRepository repository;
 
@@ -24,7 +24,7 @@ public class OperatorThread implements Runnable {
     private final String message = "Please enter the %s or Back to return to the menu: ";
     private String messageSuccess = "Operation successful.";
 
-    public OperatorThread(Socket clientSocket, Scanner scanner, PrintStream printout) {
+    public OperatorRunnable(Socket clientSocket, Scanner scanner, PrintStream printout) {
         this.clientSocket = clientSocket;
         this.scanner = scanner;
         this.printout = printout;

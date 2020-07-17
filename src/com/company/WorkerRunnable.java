@@ -33,12 +33,12 @@ public class WorkerRunnable implements Runnable{
                         printout.close();
                         break;
                     case "1":
-                        OperatorThread operatorThread = new OperatorThread(clientSocket, scanner, printout);
-                        new Thread(operatorThread, "Operator thread").start();
+                        OperatorRunnable operatorRunnable = new OperatorRunnable(clientSocket, scanner, printout);
+                        new Thread(operatorRunnable, "Operator thread").start();
                         break;
                     case "2":
-                        ClientThread clientThread = new ClientThread(clientSocket, scanner, printout);
-                        new Thread(clientThread, "Client Thread").start();
+                        ClientRunnable clientRunnable = new ClientRunnable(clientSocket, scanner, printout);
+                        new Thread(clientRunnable, "Client Thread").start();
                         break;
                     default:
                         isChoiceCorrect = false;

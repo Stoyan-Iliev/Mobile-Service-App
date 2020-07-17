@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-public class ClientThread implements Runnable {
+public class ClientRunnable implements Runnable {
     private Socket clientSocket;
     private long clientId;
 
@@ -21,7 +21,7 @@ public class ClientThread implements Runnable {
 
     private ClientRepository repository;
 
-    public ClientThread(Socket clientSocket, Scanner scanner, PrintStream printout) {
+    public ClientRunnable(Socket clientSocket, Scanner scanner, PrintStream printout) {
         this.clientSocket = clientSocket;
         this.scanner = scanner;
         this.printout = printout;
